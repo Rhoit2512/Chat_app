@@ -243,8 +243,12 @@ socket.on('chat_message', (data) => {
 
         if (remaining <= 0) {
             clearInterval(interval);
-            row.classList.add('expiring');
-            setTimeout(() => row.remove(), 800);
+            // Direct JS transition — more reliable than CSS animation class
+            row.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(-10px) scale(0.95)';
+            row.style.pointerEvents = 'none';
+            setTimeout(() => row.remove(), 850);
         }
     }, 1000);
 });
