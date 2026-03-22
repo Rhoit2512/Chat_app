@@ -184,12 +184,35 @@ socket.on('chat_message', (data) => {
         ? `<span>${data.time}</span>`
         : `<span><strong>${data.username}</strong></span><span>${data.time}</span>`;
 
+    // --- Countdown Timer ---
+    const DURATION = 10;
+    const circumference = 38; // matches stroke-dasharray in CSS
+
+    const timerEl = document.createElement('div');
+    timerEl.className = 'msg-timer';
+    timerEl.innerHTML = `
+        <div class="timer-ring" id="ring-${Date.now()}">
+            <svg viewBox="0 0 14 14">
+                <circle class="ring-bg" cx="7" cy="7" r="6"/>
+                <circle class="ring-progress" cx="7" cy="7" r="6"/>
+            </svg>
+        </div>
+        <span class="timer-seconds">${DURATION}s</span>
+    `;
+
+    const ring = timerEl.querySelector('.timer-ring');
+    const ringProgress = timerEl.querySelector('.ring-progress');
+    const secondsDisplay = timerEl.querySelector('.timer-seconds');
+
+    // Build message DOM
     if (isOwn) {
         row.appendChild(bubble);
         row.appendChild(meta);
+        row.appendChild(timerEl);
     } else {
         row.appendChild(meta);
         row.appendChild(bubble);
+        row.appendChild(timerEl);
     }
 
     // Remove welcome message if present
@@ -198,6 +221,32 @@ socket.on('chat_message', (data) => {
 
     messagesArea.appendChild(row);
     messagesArea.scrollTop = messagesArea.scrollHeight;
+
+    // Run countdown
+    let remaining = DURATION;
+    const interval = setInterval(() => {
+        remaining--;
+        secondsDisplay.textContent = `${remaining}s`;
+
+        // Update ring
+        const offset = circumference * (1 - remaining / DURATION);
+        ringProgress.style.strokeDashoffset = offset;
+
+        // Color warnings
+        if (remaining <= 3) {
+            ring.className = 'timer-ring danger';
+            secondsDisplay.className = 'timer-seconds danger';
+        } else if (remaining <= 6) {
+            ring.className = 'timer-ring warning';
+            secondsDisplay.className = 'timer-seconds warning';
+        }
+
+        if (remaining <= 0) {
+            clearInterval(interval);
+            row.classList.add('expiring');
+            setTimeout(() => row.remove(), 800);
+        }
+    }, 1000);
 });
 
 socket.on('system_message', (msg) => {

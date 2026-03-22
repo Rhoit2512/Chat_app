@@ -434,6 +434,69 @@ input::placeholder { color: var(--text-muted); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes msgFadeOut {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    80%  { opacity: 0.3; transform: translateY(-4px) scale(0.97); }
+    100% { opacity: 0; transform: translateY(-8px) scale(0.95); }
+}
+
+.msg-row.expiring { animation: msgFadeOut 0.8s ease forwards; }
+
+/* Countdown timer */
+.msg-timer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.msg-row.own .msg-timer { justify-content: flex-end; }
+.msg-row.other .msg-timer { justify-content: flex-start; }
+
+.timer-ring {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.timer-ring svg {
+    transform: rotate(-90deg);
+    width: 16px;
+    height: 16px;
+}
+
+.timer-ring .ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.1);
+    stroke-width: 2;
+}
+
+.timer-ring .ring-progress {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 38;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear, stroke 1s;
+}
+
+.timer-ring.warning .ring-progress { stroke: #ffb74d; }
+.timer-ring.danger  .ring-progress { stroke: var(--danger); }
+
+.timer-seconds {
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 14px;
+}
+
+.timer-seconds.warning { color: #ffb74d; }
+.timer-seconds.danger  { color: var(--danger); }
+
 .msg-row.own { align-items: flex-end; }
 .msg-row.other { align-items: flex-start; }
 
